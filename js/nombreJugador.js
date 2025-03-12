@@ -1,40 +1,29 @@
 const nombreInput = document.getElementById("nombreInput");
-const guardarNombreBoton = document.getElementById("botonGuardar")
+const guardarNombreBoton = document.getElementById("botonGuardar");
 
-guardarNombreBoton.addEventListener("click", () => this.guardarNombre());
+guardarNombreBoton.addEventListener("click", guardarNombre);
 nombreInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
-      guardarNombre();
-    } else {
-        ocultarError();
+        guardarNombre();
     }
-  });
+});
 
-function guardarNombre () {
-    let nombre = document.getElementById("nombreInput").value;
+function guardarNombre() {
+    let nombre = nombreInput.value.trim();
 
-    // validar longitud del nombre
+    // Validar longitud del nombre
     if (nombre.length < 4 || nombre.length > 8) {
-        mostrarError();
-        return
+        Swal.fire({
+            icon: 'error',
+            title: 'Nombre inválido',
+            text: 'El nombre debe tener entre 4 y 8 caracteres.',
+            confirmButtonColor: '#d33'
+        });
+        return;
     }
-
-    let nombres = JSON.parse(localStorage.getItem("nombres")) || [];
+    let nombres = JSON.parse(localStorage.getItem("nombresJugadores")) || [];
     nombres.push(nombre);
     localStorage.setItem("nombresJugadores", JSON.stringify(nombres));
-    window.location.href = "eligePersonaje.html"
-}
 
-function mostrarError () {
-    const nombreInput = document.getElementById("nombreInput");
-    const errorMensaje = document.getElementById("errorMensaje");
-    nombreInput.classList.add("is-invalid");
-    errorMensaje.classList.remove("d-none");
-}
-
-function ocultarError () {
-    const nombreInput = document.getElementById("nombreInput");
-    const errorMensaje = document.getElementById("errorMensaje");
-    nombreInput.classList.remove("is-invalid");
-    errorMensaje.classList.add("d-none");
+    window.location.href = "eligePersonaje.html";
 }

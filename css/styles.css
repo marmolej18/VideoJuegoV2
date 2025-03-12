@@ -14,19 +14,29 @@
     font-style: normal;
 }
 
- html,
- body {
-     width: 100%;
-     height: 100%;
-     font-family: "Minecraft", sans-serif !important;
- }
-
- .contenedor-fondo {
-    padding: 80px;
-    background-image: url('../assets/fondo.jpeg');
-    background-size: cover;
+html, body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 100vh;
- }
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Minecraft", sans-serif !important;
+    background-color: black; /* Para evitar espacios vacíos */
+    overflow: hidden; /* Evita barras de desplazamiento */
+}
+
+.contenedor-fondo {
+    width: 800px;
+    height: 700px;
+    background-image: url('../assets/fondo.jpeg');
+    background-size: 100% 100%; /* Ajusta la imagen al tamaño exacto */
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
  .contenedor-start {
     height: 100%;

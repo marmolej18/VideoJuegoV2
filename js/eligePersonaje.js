@@ -60,8 +60,8 @@ function comenzar () {
     } else {
         Swal.fire({
             icon: 'warning',
-            title: 'Selecciona un personaje',
-            text: 'Arrastra un personaje al área antes de comenzar.',
+            title: 'Select a character',
+            text: 'Drag a character into the area before starting.',
             confirmButtonColor: '#d33'
         });
     }

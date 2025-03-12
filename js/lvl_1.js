@@ -27,6 +27,7 @@ var scoreText;
 var lives = 3;
 var lifeBar;
 var music;
+var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
 
 var game = new Phaser.Game(config);
 
@@ -35,21 +36,23 @@ function preload() {
     this.load.image('ground', 'assets/individual2.png');
     this.load.image('star', 'assets/trofeo.png');
     this.load.image('bug', 'assets/bugP.png');
-    this.load.image('frente', 'assets/frente_.png');
-    this.load.image('frente', 'assets/frenteF.png');
-    /*this.load.image('derecha', 'assets/derecha_.png');
-    this.load.image('izquierda', 'assets/izquierda_.png');*/
     this.load.image('perder', 'assets/Perder.png');
+    this.load.image('vidaIcono', 'assets/corazon.png');
     this.load.audio('backgroundMusic','music/AKB48.mp3');
+
     // Obtener el personaje seleccionado desde localStorage
     let personajeSeleccionado = localStorage.getItem("personajeSeleccionado") || 'personaje1';
-    console.log("Dentro del lvl estamos agarrando"+personajeSeleccionado);
+    console.log("Dentro del lvl estamos agarrando: "+personajeSeleccionado);
     
-    // Cargar la imagen del personaje seleccionado
+    // Cargar las imágenes de los personajes dependiendo del personaje seleccionado
     if (personajeSeleccionado === "personaje1") {
-        this.load.image('playerSprite', 'assets/Frente_.png');
+        this.load.image('playerSprite', 'assets/Frente_.png');  
+        this.load.image('derecha', 'assets/derecha_.png');  
+        this.load.image('izquierda', 'assets/izquierda_.png');  
     } else if (personajeSeleccionado === "personaje2") {
-        this.load.image('playerSprite', 'assets/frenteF.png');
+        this.load.image('playerSprite', 'assets/frenteF.png');  
+        this.load.image('derecha', 'assets/derechaF.png');  
+        this.load.image('izquierda', 'assets/izquierdaF.png'); 
     }
 }
 
@@ -61,6 +64,7 @@ function create() {
         icon: 'warning',
         /*confirmButtonText: 'Entendido'*/
     });
+
 
     music = this.sound.add('backgroundMusic', { volume: 0.5, loop: true });
     music.play();
@@ -75,7 +79,12 @@ function create() {
     platforms.create(690, 290, 'ground');
     platforms.create(400, 20, 'ground').setScale(2, 1).refreshBody();
 
-    //player = this.physics.add.sprite(100, 450, 'frente');
+    scoreText = this.add.text(16, 70, '', {
+        fontSize: '50px',
+        fill: '#402806',
+        fontFamily: 'Minecraft'
+    });
+
     player = this.physics.add.sprite(100, 450, 'playerSprite');
     player.setScale(0.7);
     player.setBounce(0.2);
@@ -93,11 +102,6 @@ function create() {
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
-    scoreText = this.add.text(16, 70, 'Score: 0', {
-        fontSize: '50px',
-        fill: '#402806',
-        fontFamily: 'Minecraft'
-    });
 
     bugs = this.physics.add.sprite(600, 500, 'bug');
     bugs.setScale(0.8);
@@ -119,6 +123,14 @@ function create() {
     this.physics.add.collider(bugs, player, hitBug, null, this);
     this.physics.add.collider(bug2, player, hitBug, null, this);
 
+    // Añadir el icono de vida 
+    var iconWidth = 50;  // Tamaño del icono
+    var iconHeight = 50; // Tamaño del icono
+    var iconX = 580; // Posición X 
+    var iconY = 90;  // Posición Y 
+    this.add.image(iconX, iconY, 'vidaIcono').setOrigin(0.5, 0.5).setScale(0.5); // Ajusta la escala 
+
+    // Crear la barra de vida
     lifeBar = this.add.graphics();
     updateLifeBar();
 }
@@ -126,6 +138,7 @@ function create() {
 function update() {
     if (gameOver) return;
 
+    // Movimientos del jugador y actualización de texturas dependiendo del personaje seleccionado
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.setTexture('izquierda');
@@ -134,7 +147,7 @@ function update() {
         player.setTexture('derecha');
     } else {
         player.setVelocityX(0);
-        player.setTexture('frente');
+        player.setTexture('playerSprite');  // Esto debe ser la imagen frontal del personaje seleccionado
     }
 
     if (cursors.up.isDown && player.body.touching.down) {
@@ -143,12 +156,28 @@ function update() {
 }
 
 function hitBug(bug, player) {
+    if (isInvulnerable) return;  // Si está invulnerable, no hacer nada más
     lives--;
     updateLifeBar();
+
+    isInvulnerable = true; // Activar invulnerabilidad
+    // Temporizador para la invulnerabilidad (por ejemplo, 1 segundo)
+    this.time.delayedCall(1000, function() {
+        isInvulnerable = false;  // Desactivar invulnerabilidad después de 1 segundo
+    });
     //console.log("Izquierda:", cursors.left.isDown, "Derecha:", cursors.right.isDown);
     if (lives <= 0) {
         this.physics.pause();
-        player.setTexture('perder');
+        // Verificar si el personaje seleccionado es el personaje 2
+        let personajeSeleccionado = localStorage.getItem("personajeSeleccionado") || 'personaje1';
+        
+        if (personajeSeleccionado === "personaje2") {
+            // Si es el personaje 2, aplicar el color azul cielo
+            player.setTint(0x87CEEB);  // Azul cielo
+        } else {
+            // Si es el personaje 1, seguir mostrando la imagen 'perder'
+            player.setTexture('perder');
+        }
         gameOver = true;
         music.stop();
 
@@ -179,17 +208,20 @@ function collectStar(player, star) {
 }
 
 function updateLifeBar() {
-    var lifePercentage = (lives / 3);
-    var barWidth = 200;
-    var barHeight = 20;
-    var barX = 590;
-    var barY = 80;
+    var lifePercentage = (lives / 3); // Porcentaje de vida
+    var barWidth = 200;  // Ancho de la barra
+    var barHeight = 20;  // Alto de la barra
+    var barX = 590;  // Posición X de la barra
+    var barY = 80;   // Posición Y de la barra
 
+    // Limpiar la barra de vida previa
     lifeBar.clear();
 
+    // Dibujar la barra de vida (gris de fondo)
     lifeBar.fillStyle(0x808080);
     lifeBar.fillRect(barX, barY, barWidth, barHeight);
 
-    lifeBar.fillStyle(0x00ff00);
+    lifeBar.fillStyle(0x00ff00);  // Rosa pastel 
     lifeBar.fillRect(barX, barY, barWidth * lifePercentage, barHeight);
 }
+

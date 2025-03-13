@@ -28,22 +28,16 @@ var lives = 3;
 var lifeBar;
 var music;
 var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
-var isPaused = false;
-var pauseButton;
-var resumeButton,restartButton, exitButton;
 
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.image('sky', 'assets/fondoP.png');
-    this.load.image('ground', 'assets/individual2.png');
+    this.load.image('sky', 'assets/fondo2.png');
+    this.load.image('ground', 'assets/pisoRosa.png');
     this.load.image('star', 'assets/trofeo.png');
     this.load.image('bug', 'assets/bugP.png');
     this.load.image('perder', 'assets/Perder.png');
     this.load.image('vidaIcono', 'assets/corazon.png');
-    this.load.image('pauseIcon', 'assets/pause_.png');
-    this.load.image('playIcon', 'assets/play_.png');
-    this.load.image('restart', 'assets/restart.png');
     this.load.audio('backgroundMusic','music/AKB48.mp3');
 
     // Obtener el personaje seleccionado desde localStorage
@@ -135,31 +129,6 @@ function create() {
     var iconX = 580; // Posición X 
     var iconY = 90;  // Posición Y 
     this.add.image(iconX, iconY, 'vidaIcono').setOrigin(0.5, 0.5).setScale(0.5); // Ajusta la escala 
-
-    // Botón de pausa en la esquina superior derecha
-    /*pauseButton = this.add.text(310, 65, 'PAUSE', {
-        fontSize: '30px',
-        fill: '#fff',
-        backgroundColor: '#402806',
-        padding: { x: 10, y: 5 }
-    }).setInteractive();
-
-    // Evento de clic en el botón
-    pauseButton.on('pointerdown', togglePause, this);*/
-
-    // Crear el botón de pausa
-    pauseButton = this.add.image(370, 85, 'pauseIcon').setScale(0.5).setInteractive();
-
-    
-    pauseButton.on('pointerdown', togglePause, this);// Evento de clic en el botón
-
-    pauseButton.on('pointerover', function() {
-        pauseButton.setScale(0.55); // Aumentar el tamaño al pasar el mouse
-    });
-
-    pauseButton.on('pointerout', function() {
-        pauseButton.setScale(0.5); // Volver al tamaño original
-    });
 
     // Crear la barra de vida
     lifeBar = this.add.graphics();
@@ -255,31 +224,4 @@ function updateLifeBar() {
     lifeBar.fillStyle(0x00ff00);  // Rosa pastel 
     lifeBar.fillRect(barX, barY, barWidth * lifePercentage, barHeight);
 }
-
-/*function togglePause() {
-    if (!isPaused) {
-        this.physics.pause(); // Pausar el juego
-        music.pause(); // Pausar la música
-        pauseButton.setText('RESUME'); // Cambiar el texto del botón
-    } else {
-        this.physics.resume(); // Reanudar el juego
-        music.resume(); // Reanudar la música
-        pauseButton.setText('PAUSE'); // Cambiar el texto del botón
-    }
-    isPaused = !isPaused; // Cambiar el estado de pausa
-}*/
-
-function togglePause() {
-    if (!isPaused) {
-        this.physics.pause(); // Pausar el juego
-        music.pause(); // Pausar la música
-        pauseButton.setTexture('playIcon'); // Cambiar a icono de "play"
-    } else {
-        this.physics.resume(); // Reanudar el juego
-        music.resume(); // Reanudar la música
-        pauseButton.setTexture('pauseIcon'); // Cambiar a icono de "pause"
-    }
-    isPaused = !isPaused;
-}
-
 

@@ -202,10 +202,10 @@ function update() {
     
                 Swal.fire({
                     title: 'GAME OVER',
-                    text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
+                    text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
                     icon: 'error',
-                    confirmButtonText: 'Volver a jugar',
-                    cancelButtonText: 'Regresar al menu',
+                    confirmButtonText: 'Back to play',
+                    cancelButtonText: 'Back to menu',
                     showCancelButton: true
                 }).then(result => {
                     if (result.isConfirmed) {

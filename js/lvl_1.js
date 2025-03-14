@@ -31,6 +31,9 @@ var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
 var isPaused = false;
 var pauseButton;
 var resumeButton,restartButton, exitButton;
+var juegoIniciado = false;
+var mostrandoAlerta = false;
+var nivelCompletado = false;
 
 var game = new Phaser.Game(config);
 
@@ -63,15 +66,6 @@ function preload() {
 }
 
 function create() {
-    /*Notificacion de precaucion */
-    Swal.fire({
-        title: '¡Welcome!',
-        text: 'Don´t touch the bugs!',
-        icon: 'warning',
-        /*confirmButtonText: 'Entendido'*/
-    });
-
-
     music = this.sound.add('backgroundMusic', { volume: 0.5, loop: true });
     music.play();
 
@@ -167,7 +161,64 @@ function create() {
 }
 
 function update() {
-    if (gameOver) return;
+    if (!juegoIniciado) {
+    /*Notificacion de precaucion */
+        if (!mostrandoAlerta) {
+            this.physics.pause();
+            mostrandoAlerta = true;
+            Swal.fire({
+                title: '¡Welcome!',
+                text: 'Don´t touch the bugs!',
+                icon: 'warning',
+                /*confirmButtonText: 'Entendido'*/
+            }).then(() => {
+                juegoIniciado = true;
+                mostrandoAlerta = false;
+                this.physics.resume();
+            });
+        }
+        return;
+    }
+    if (gameOver) {
+        if (nivelCompletado) {
+            // completo el nivel
+            if (!mostrandoAlerta) {
+                mostrandoAlerta = true;
+                Swal.fire({
+                    title: 'Nivel completado!',
+                    icon: 'success',
+                    confirmButtonText: 'Nivel 2',
+                    showDenyButton: false  
+                }).then(() => {
+                    window.location.href = 'juegoNivel2.html'
+                })
+            }
+        } else {
+            // perdio 
+            if (!mostrandoAlerta) {
+                let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
+                let ultimoRegistro = puntajesJugadores[puntajesJugadores.length -1];
+                mostrandoAlerta = true;
+    
+                Swal.fire({
+                    title: 'GAME OVER',
+                    text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
+                    icon: 'info',
+                    confirmButtonText: 'Volver a jugar',
+                    cancelButtonText: 'Regresar al menu',
+                    showCancelButton: true
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.reload();
+                    } else {
+                        window.location.href = 'menu.html'
+                    }
+                });
+            }
+        }
+
+        return
+    };
 
     // Movimientos del jugador y actualización de texturas dependiendo del personaje seleccionado
     if (cursors.left.isDown) {
@@ -236,6 +287,30 @@ function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
+
+    if (score == 50) {
+        nivelCompletado = true;
+        gameOver = true;
+        this.physics.pause();
+        music.stop();
+        // Obtener nombres guardados en localStorage
+        let nombres = JSON.parse(localStorage.getItem("nombresJugadores")) || [];
+        
+        // Asegurarse de obtener el último nombre correctamente
+        let ultimoNombre = "Desconocido";
+        if (Array.isArray(nombres) && nombres.length > 0) {
+            ultimoNombre = nombres[nombres.length - 1]; // Último nombre agregado
+        }
+
+        // Obtener el vector de puntajes guardados
+        let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
+
+        // Agregar el nuevo registro de nombre y puntaje
+        puntajesJugadores.push({ nombre: ultimoNombre, puntaje: score });
+
+        // Guardar el vector actualizado en localStorage
+        localStorage.setItem("puntajesJugadores", JSON.stringify(puntajesJugadores));
+    }
 }
 
 function updateLifeBar() {
@@ -255,19 +330,6 @@ function updateLifeBar() {
     lifeBar.fillStyle(0x00ff00);  // Rosa pastel 
     lifeBar.fillRect(barX, barY, barWidth * lifePercentage, barHeight);
 }
-
-/*function togglePause() {
-    if (!isPaused) {
-        this.physics.pause(); // Pausar el juego
-        music.pause(); // Pausar la música
-        pauseButton.setText('RESUME'); // Cambiar el texto del botón
-    } else {
-        this.physics.resume(); // Reanudar el juego
-        music.resume(); // Reanudar la música
-        pauseButton.setText('PAUSE'); // Cambiar el texto del botón
-    }
-    isPaused = !isPaused; // Cambiar el estado de pausa
-}*/
 
 function togglePause() {
     if (!isPaused) {

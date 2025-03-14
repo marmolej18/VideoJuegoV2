@@ -203,7 +203,7 @@ function update() {
                 Swal.fire({
                     title: 'GAME OVER',
                     text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
-                    icon: 'info',
+                    icon: 'error',
                     confirmButtonText: 'Volver a jugar',
                     cancelButtonText: 'Regresar al menu',
                     showCancelButton: true

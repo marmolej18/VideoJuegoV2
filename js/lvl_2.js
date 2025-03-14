@@ -231,8 +231,10 @@ function update() {
                 Swal.fire({
                     title: 'GAME OVER',
                     text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
-                    icon: 'info',
-                    confirmButtonText: 'Volver a jugar?'    
+                    icon: 'error',
+                    confirmButtonText: 'Volver a jugar',
+                    cancelButtonText: 'Regresar al menu',
+                    showCancelButton: true 
                 }).then(result => {
                     if (result.isConfirmed) {
                         window.location.href = 'juegoNivel1.html'

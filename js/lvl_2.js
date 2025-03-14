@@ -166,9 +166,9 @@ function create() {
     var iconY = 90;  // Posición Y 
     this.add.image(iconX, iconY, 'vidaIcono').setOrigin(0.5, 0.5).setScale(0.5); // Ajusta la escala 
 
+
     // Crear el botón de pausa
     pauseButton = this.add.image(370, 85, 'pauseIcon').setScale(0.5).setInteractive();
-
 
     pauseButton.on('pointerdown', togglePause, this);// Evento de clic en el botón
 

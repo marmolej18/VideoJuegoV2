@@ -34,6 +34,11 @@ var isPaused = false;
 var juegoIniciado = false;
 var mostrandoAlerta = false;
 var nivelCompletado = false;
+var powerUp;
+let timeText;
+let invulnerableTime = 0;
+let powerUpTimer; // Variable para almacenar el temporizador del powerUp
+let timer;
 
 var game = new Phaser.Game(config);
 
@@ -47,6 +52,7 @@ function preload() {
     this.load.image('vidaIcono', 'assets/corazon.png');
     this.load.image('pauseIcon', 'assets/pause_.png');
     this.load.image('playIcon', 'assets/play_.png');
+    this.load.image('power', 'assets/linterna.png');
     this.load.audio('backgroundMusic','music/AKB48.mp3');
     this.load.spritesheet("fire", 'assets/burning_loop_1.png', { frameWidth: 24, frameHeight: 32 })
     // Obtener el personaje seleccionado desde localStorage
@@ -104,6 +110,8 @@ function create() {
         fill: '#402806',
         fontFamily: 'Minecraft'
     });
+
+    timeText = this.add.text(20, 120, '', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft'});
 
     player = this.physics.add.sprite(100, 550, 'playerSprite');
     player.setScale(0.7);
@@ -209,11 +217,18 @@ function update() {
                 let ultimoRegistro = puntajesJugadores[puntajesJugadores.length -1];
                 mostrandoAlerta = true;
                 Swal.fire({
-                    title: 'Juego completado!',
-                    icon: 'success',
+                    title: '',
+                    imageUrl: '/assets/youWin.png',
+                    imageWidth: 400,
                     text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
                     confirmButtonText: 'Records',
-                    showDenyButton: false  
+                    showDenyButton: false,
+                    background: "#00000080",
+                    width: 800,
+                    heightAuto: false,
+                    customClass: {
+                        popup: 'custom-alert' // Clases CSS personalizadas
+                    },
                 }).then(result => {
                     window.location.href = "records.html"
                 })
@@ -269,6 +284,7 @@ function update() {
 }
 
 function hitFire(player, fire) {
+    if (isInvulnerable) return;
     this.physics.pause();
     terminarJuego(player)
 }
@@ -324,6 +340,67 @@ function collectStar(player, star) {
     score += 10;
     scoreText.setText('Score: ' + score);
 
+    if (score == 10) {
+        powerUp = this.physics.add.image(510, 400, 'power');
+        powerUp.setScale(0.2);
+        powerUp.setImmovable(true); // Hacer que no se mueva
+        powerUp.body.allowGravity = false; // Desactivar la gravedad
+
+        // Crear un texto para mostrar el tiempo restante
+        let remainingPowerUpTime = 7; // Tiempo total para recoger el powerUp
+        let powerUpTimerText = this.add.text(20, 120, 'Available power: ' + remainingPowerUpTime, { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft' });
+
+        // Variable para verificar si el powerUp ha sido recogido
+        let powerUpCollected = false;
+
+        // Temporizador para destruir el powerUp después de 7 segundos
+        powerUpTimer = this.time.addEvent({
+            delay: 1000, // Cada segundo
+            repeat: 6, // Repetir 6 veces (0 a 6, total 7 segundos)
+            callback: function () {
+                remainingPowerUpTime--;
+                powerUpTimerText.setText('Available power: ' + remainingPowerUpTime); // Actualizar el texto
+
+                if (remainingPowerUpTime <= 0) {
+                    powerUp.destroy(); // Destruir el powerUp si no ha sido recogido
+                    powerUpTimerText.setText(''); // Limpiar el texto
+                    powerUpTimer.remove(); // Detener el temporizador
+                }
+            },
+            callbackScope: this
+        });
+
+        // Añadir colisión entre el jugador y el powerUp
+        this.physics.add.overlap(player, powerUp, function () {
+            if (!powerUpCollected) { // Verificar si no ha sido recogido
+                powerUpCollected = true; // Marcar como recogido
+                powerUp.destroy(); // Destruir el powerUp al tocarlo
+                powerUpTimerText.setText(''); // Limpiar el texto
+                isInvulnerable = true; // Activar invulnerabilidad
+                invulnerableTime = 7;
+                timeText.setText('Invulnerable: ' + invulnerableTime);
+                
+                timer = this.time.addEvent({
+                    delay: 1000,
+                    repeat: 6,
+                    callback: function () {
+                        invulnerableTime--;
+                        timeText.setText('Invulnerable: ' + invulnerableTime);
+
+                        if (invulnerableTime === 0) {
+                            isInvulnerable = false;
+                            timeText.setText('');
+                            timer.remove();
+                        }
+                    },
+                    callbackScope: this
+                });
+
+                powerUpTimer.remove(); // Detener el temporizador del powerUp
+            }
+        }, null, this);
+    }
+
     if (score == 50) {
         nivelCompletado = true;
         gameOver = true;
@@ -366,10 +443,22 @@ function togglePause() {
         this.physics.pause(); // Pausar el juego
         music.pause(); // Pausar la música
         pauseButton.setTexture('playIcon');  // Cambiar a icono de "play"
+        if(powerUpTimer){
+            powerUpTimer.paused = true;
+        }
+        if(timer){
+            timer.paused = true;
+        }
     } else {
         this.physics.resume(); // Reanudar el juego
         music.resume(); // Reanudar la música
         pauseButton.setTexture('pauseIcon'); // Cambiar a icono de "pause"
+        if(powerUpTimer){
+            powerUpTimer.paused = false;
+        }
+        if(timer){
+            timer.paused = false;
+        }
     }
     isPaused = !isPaused;
 }

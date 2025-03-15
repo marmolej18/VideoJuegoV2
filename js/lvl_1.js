@@ -282,9 +282,16 @@ function hitBug(bug, player) {
 
         // Obtener el vector de puntajes guardados
         let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
+        // Obtener la fecha actual
+        const fecha = new Date();
+        const dia = String(fecha.getDate()).padStart(2, '0'); // Agregar 0 si es un solo dígito
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes 0 es enero, así que sumamos 1
+        const anio = fecha.getFullYear();
 
+        const fechaFormateada = `${dia}/${mes}/${anio}`;
         // Agregar el nuevo registro de nombre y puntaje
-        puntajesJugadores.push({ nombre: ultimoNombre, puntaje: score });
+        //puntajesJugadores.push({ nombre: ultimoNombre, puntaje: score });
+        puntajesJugadores.push({ nombre: ultimoNombre, fecha: fechaFormateada,puntaje: score});
 
         // Guardar el vector actualizado en localStorage
         localStorage.setItem("puntajesJugadores", JSON.stringify(puntajesJugadores));

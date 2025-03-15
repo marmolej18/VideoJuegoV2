@@ -42,6 +42,7 @@ let timeText;
 let invulnerableTime = 0;
 let powerUpTimer; // Variable para almacenar el temporizador del powerUp
 let timer;
+let DateText;
 
 var game = new Phaser.Game(config);
 
@@ -101,20 +102,15 @@ function create() {
 
     timeText = this.add.text(20, 120, '', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft' });
 
-    // Obtener la fecha actual
-    const fecha = new Date();
-    const dia = String(fecha.getDate()).padStart(2, '0'); // Día con 2 dígitos
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes con 2 dígitos
-    const anio = fecha.getFullYear(); // Año completo
+    let scene = this; // Guardamos referencia a la escena
 
-    const fechaTexto = `${dia}/${mes}/${anio}`; // Formato: dd/mm/yyyy
-
-    // Mostrar la fecha en pantalla
-    this.add.text(650, 50, fechaTexto, { 
-        fontSize: '20px', 
-        fill: 'black', 
-        fontFamily: 'Minecraft' 
+    // Retrasamos la creación de DateText para asegurarnos de que la fuente ya cargó
+    this.time.delayedCall(200, function() {
+        DateText = scene.add.text(550, 50, 'Date:', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft' });
+        fechaM(); // Llamamos a la función para mostrar la fecha
     });
+    
+
 
     player = this.physics.add.sprite(100, 450, 'playerSprite');
     player.setScale(0.7);
@@ -228,26 +224,23 @@ function update() {
                 soundGameOver.play();
                 Swal.fire({
                     title: '',
-                    html: `<h2 style="font-size: 24px; color: white;">Name: ${ultimoRegistro.nombre}</h2>
-                           <h3 style="font-size: 20px; color: white;">Score: ${ScoreTem}</h3>`, 
+                    text: `Name: ${ultimoRegistro.nombre}    Score: ${ScoreTem}`,
                     imageUrl: '/assets/gameOver.png',
-                    imageWidth: 400, // Reducir imagen para que no ocupe mucho espacio
-                    imageHeight: 'auto',
                     confirmButtonText: 'Back to play',
                     cancelButtonText: 'Back to menu',
                     showCancelButton: true,
                     background: "#00000080",
-                    width: '770px', // Ajuste exacto al juego
-                    height: '700px', // Altura exacta del juego
-                    padding: '0px', // Eliminar espacio extra
-                    scrollbarPadding: false,
-                    allowOutsideClick: false, // Evita que se cierre al hacer clic afuera
+                    width: 800,
+                    heightAuto: false,
                     customClass: {
-                        popup: 'custom-alert',
-                        title: 'custom-title',
-                        htmlContainer: 'custom-html',
-                        image: 'custom-image'
+                        popup: 'custom-alert' // Clases CSS personalizadas
                     },
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'juegoNivel1.html'
+                    } else {
+                        window.location.href = 'menu.html'
+                    }
                 });
                 
                 
@@ -476,5 +469,14 @@ function togglePause() {
     }
     isPaused = !isPaused;
 }
+function fechaM(){
+    // Obtener la fecha actual
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, '0'); // Día con 2 dígitos
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes con 2 dígitos
+    const anio = fecha.getFullYear(); // Año completo
 
+    const fechaTexto = `${dia}/${mes}/${anio}`; // Formato: dd/mm/yyyy
+    DateText.setText('Date: '+ fechaTexto);
+}
 

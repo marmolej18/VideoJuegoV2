@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div class="contenedor-fondoCDT glass-background">
+        <div class="container">
+            <div class="table-container">
+                <h2 class="text-center">TOP SCORES</h2>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPuntajes">
+                        <!-- Aquí van los datos -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <img src="/assets/izquierdaBTN.png" alt="izquierda-btn" class="btn-izq" onclick="window.location.href='menu.html'">
+        </div>
+    </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
+
+                let tabla = document.getElementById("tablaPuntajes");
+                tabla.innerHTML = ""; // Limpiar la tabla antes de agregar datos
+
+                puntajesJugadores
+                    .sort((a, b) => b.puntaje - a.puntaje) // Ordenar por puntaje descendente (ordenado)
+                    .forEach(jugador => {
+                        let fila = `<tr>
+                            <td>${jugador.nombre}</td>
+                            <td>${jugador.puntaje}</td>
+                            <td>${jugador.fecha}</td>
+                        </tr>`;
+                        tabla.innerHTML += fila;
+                    });
+            });
+        </script>
+</body>
+
+</html>

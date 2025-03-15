@@ -249,6 +249,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    margin-bottom: 70px;
 }
 /* Contenedor principal */
 .father {
@@ -260,16 +261,22 @@
 /* Sección de imágenes */
 .image-container {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    flex-wrap: wrap;  /* Permite que las imágenes pasen a una nueva línea si es necesario */
+    justify-content: center;  /* Centra las imágenes horizontalmente */
+    align-items: center;  /* Alinea las imágenes verticalmente */
+    gap: 15px;  /* Espacio entre imágenes */
     margin-bottom: 20px;
+    max-width: 100%; /* Evita desbordamientos */
 }
 
+/* Imágenes dentro del contenedor */
 .image-container img {
-    width: 190px; 
+    width: 150px; /* Tamaño uniforme */
     height: auto;
+    max-width: 100%; /* Para que no se desborden en pantallas pequeñas */
     border-radius: 10px;
 }
+
 
 .content {
     display: flex;
@@ -308,7 +315,8 @@
 .content {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Dos columnas (izquierda y derecha) */
-    grid-template-rows: auto; /* Una sola fila */
+    /*grid-template-rows: auto; /* Una sola fila */
+    align-items: stretch; /* Hacer que ambas secciones tengan la misma altura */
     gap: 20px;
 }
 
@@ -343,4 +351,28 @@
     .swal2-actions {
         margin-top: -180px;
     }
+}
+
+/*RECORDS*/
+.table-container {
+    background: var(--glassPurple); /* Blanco traslúcido */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    max-width: 600px;
+    margin: 50px auto;
+    /*border: 2px solid #000; /* Bordes negros */
+}
+.table {
+    border: 2px solid black; /* Bordes de la tabla */
+    font-size: 25px;
+    background: var(--blanco);
+}
+.table th, .table td {
+    text-align: center;
+    border: 1px solid black; /* Bordes en celdas */
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(233, 0, 241, 0.432); /* Efecto hover suave */
+    transition: background 0.3s ease-in-out; /* Suaviza el efecto */
 }

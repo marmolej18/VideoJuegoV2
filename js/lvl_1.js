@@ -30,7 +30,7 @@ var music;
 var soundStar;
 var soundPowerUp;
 var soundGameOver;
-var isInvulnerable = false;  
+var isInvulnerable = false;
 var isPaused = false;
 var pauseButton;
 var resumeButton, restartButton, exitButton;
@@ -80,7 +80,7 @@ function create() {
     music = this.sound.add('backgroundMusic', { volume: 0.5, loop: true });
     soundStar = this.sound.add('soundStar', { volume: 0.7 });
     soundPowerUp = this.sound.add('soundPowerUp', { volume: 0.7 });
-    soundGameOver = this.sound.add('gameOverSound', { volume: 0.7 }); 
+    soundGameOver = this.sound.add('gameOverSound', { volume: 0.7 });
     music.play();
 
     this.add.image(400, 300, 'sky');
@@ -99,7 +99,22 @@ function create() {
         fontFamily: 'Minecraft'
     });
 
-    timeText = this.add.text(20, 120, '', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft'});
+    timeText = this.add.text(20, 120, '', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft' });
+
+    // Obtener la fecha actual
+    const fecha = new Date();
+    const dia = String(fecha.getDate()).padStart(2, '0'); // Día con 2 dígitos
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes con 2 dígitos
+    const anio = fecha.getFullYear(); // Año completo
+
+    const fechaTexto = `${dia}/${mes}/${anio}`; // Formato: dd/mm/yyyy
+
+    // Mostrar la fecha en pantalla
+    this.add.text(650, 50, fechaTexto, { 
+        fontSize: '20px', 
+        fill: 'black', 
+        fontFamily: 'Minecraft' 
+    });
 
     player = this.physics.add.sprite(100, 450, 'playerSprite');
     player.setScale(0.7);
@@ -208,28 +223,34 @@ function update() {
             if (!mostrandoAlerta) {
                 let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
                 let ultimoRegistro = puntajesJugadores[puntajesJugadores.length - 1];
+                let ScoreTem = localStorage.getItem('ScoreTem');
                 mostrandoAlerta = true;
                 soundGameOver.play();
                 Swal.fire({
                     title: '',
-                    text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
+                    html: `<h2 style="font-size: 24px; color: white;">Name: ${ultimoRegistro.nombre}</h2>
+                           <h3 style="font-size: 20px; color: white;">Score: ${ScoreTem}</h3>`, 
                     imageUrl: '/assets/gameOver.png',
+                    imageWidth: 400, // Reducir imagen para que no ocupe mucho espacio
+                    imageHeight: 'auto',
                     confirmButtonText: 'Back to play',
                     cancelButtonText: 'Back to menu',
                     showCancelButton: true,
                     background: "#00000080",
-                    width: 800,
-                    heightAuto: false,
+                    width: '770px', // Ajuste exacto al juego
+                    height: '700px', // Altura exacta del juego
+                    padding: '0px', // Eliminar espacio extra
+                    scrollbarPadding: false,
+                    allowOutsideClick: false, // Evita que se cierre al hacer clic afuera
                     customClass: {
-                        popup: 'custom-alert' // Clases CSS personalizadas
+                        popup: 'custom-alert',
+                        title: 'custom-title',
+                        htmlContainer: 'custom-html',
+                        image: 'custom-image'
                     },
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    } else {
-                        window.location.href = 'menu.html'
-                    }
                 });
+                
+                
             }
         }
 
@@ -290,19 +311,31 @@ function hitBug(bug, player) {
 
         // Obtener el vector de puntajes guardados
         let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
+
         // Obtener la fecha actual
         const fecha = new Date();
         const dia = String(fecha.getDate()).padStart(2, '0'); // Agregar 0 si es un solo dígito
         const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes 0 es enero, así que sumamos 1
         const anio = fecha.getFullYear();
-
         const fechaFormateada = `${dia}/${mes}/${anio}`;
-        // Agregar el nuevo registro de nombre y puntaje
-        //puntajesJugadores.push({ nombre: ultimoNombre, puntaje: score });
-        puntajesJugadores.push({ nombre: ultimoNombre, fecha: fechaFormateada,puntaje: score});
+
+        // Buscar si el jugador ya tiene un puntaje guardado
+        let jugadorIndex = puntajesJugadores.findIndex(j => j.nombre === ultimoNombre);
+
+        if (jugadorIndex !== -1) {
+            // Si ya existe, solo actualizar si el nuevo puntaje es mayor
+            if (score > puntajesJugadores[jugadorIndex].puntaje) {
+                puntajesJugadores[jugadorIndex].puntaje = score;
+                puntajesJugadores[jugadorIndex].fecha = fechaFormateada; // Actualizar la fecha
+            }
+        } else {
+            // Si no existe, agregar el nuevo registro
+            puntajesJugadores.push({ nombre: ultimoNombre, fecha: fechaFormateada, puntaje: score });
+        }
 
         // Guardar el vector actualizado en localStorage
         localStorage.setItem("puntajesJugadores", JSON.stringify(puntajesJugadores));
+
     }
 }
 
@@ -311,6 +344,8 @@ function collectStar(player, star) {
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
+    localStorage.setItem('ScoreTem', score.toString());
+    
 
     if (score == 10) {
         powerUp = this.physics.add.image(500, 230, 'power');
@@ -352,7 +387,7 @@ function collectStar(player, star) {
                 isInvulnerable = true; // Activar invulnerabilidad
                 invulnerableTime = 7;
                 timeText.setText('Invulnerable: ' + invulnerableTime);
-                
+
                 timer = this.time.addEvent({
                     delay: 1000,
                     repeat: 6,
@@ -422,20 +457,20 @@ function togglePause() {
         this.physics.pause(); // Pausar el juego
         music.pause(); // Pausar la música
         pauseButton.setTexture('playIcon'); // Cambiar a icono de "play"
-        if(powerUpTimer){
+        if (powerUpTimer) {
             powerUpTimer.paused = true;
         }
-        if(timer){
+        if (timer) {
             timer.paused = true;
         }
     } else {
         this.physics.resume(); // Reanudar el juego
         music.resume(); // Reanudar la música
         pauseButton.setTexture('pauseIcon'); // Cambiar a icono de "pause"
-        if(powerUpTimer){
+        if (powerUpTimer) {
             powerUpTimer.paused = false;
         }
-        if(timer){
+        if (timer) {
             timer.paused = false;
         }
     }

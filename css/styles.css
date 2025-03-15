@@ -334,3 +334,9 @@
     border-radius: 8px;
     text-align: center;
 }
+
+.custom-alert {
+    height: 700px !important;
+    color: #FFF;
+    font-size: 20px;
+}

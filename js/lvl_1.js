@@ -201,12 +201,18 @@ function update() {
                 mostrandoAlerta = true;
 
                 Swal.fire({
-                    title: 'GAME OVER',
+                    title: '',
                     text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
-                    icon: 'error',
+                    imageUrl: '/assets/gameOver.png',
                     confirmButtonText: 'Back to play',
                     cancelButtonText: 'Back to menu',
-                    showCancelButton: true
+                    showCancelButton: true,
+                    background: "#00000080",
+                    width: 800,
+                    heightAuto: false,
+                    customClass: {
+                        popup: 'custom-alert' // Clases CSS personalizadas
+                    },
                 }).then(result => {
                     if (result.isConfirmed) {
                         window.location.reload();

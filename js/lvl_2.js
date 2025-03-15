@@ -29,6 +29,10 @@ var scoreText;
 var lives = 3;
 var lifeBar;
 var music;
+var soundStar;
+var soundPowerUp;
+var soundGameOver;
+var soundGameCompleted;
 var isInvulnerable = false;  
 var isPaused = false;
 var juegoIniciado = false;
@@ -54,6 +58,10 @@ function preload() {
     this.load.image('playIcon', 'assets/play_.png');
     this.load.image('power', 'assets/linterna.png');
     this.load.audio('backgroundMusic','music/AKB48.mp3');
+    this.load.audio('soundStar', 'music/trofeo.mp3');
+    this.load.audio('soundPowerUp', 'music/powerUp.mp3');
+    this.load.audio('gameOverSound', 'music/gameover.mp3');
+    this.load.audio('gameCompletedSound', 'music/youWin.mp3');
     this.load.spritesheet("fire", 'assets/burning_loop_1.png', { frameWidth: 24, frameHeight: 32 })
     // Obtener el personaje seleccionado desde localStorage
     let personajeSeleccionado = localStorage.getItem("personajeSeleccionado") || 'personaje1';
@@ -74,6 +82,10 @@ function create() {
 
     music = this.sound.add('backgroundMusic', { volume: 0.5, loop: true });
     music.play();
+    soundStar = this.sound.add('soundStar', { volume: 0.7 });
+    soundPowerUp = this.sound.add('soundPowerUp', { volume: 0.7 });
+    soundGameOver = this.sound.add('gameOverSound', { volume: 0.7 });
+    soundGameCompleted = this.sound.add('gameCompletedSound', { volume: 0.7 });
 
     this.add.image(400, 300, 'sky');
 
@@ -216,10 +228,12 @@ function update() {
                 let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
                 let ultimoRegistro = puntajesJugadores[puntajesJugadores.length -1];
                 mostrandoAlerta = true;
+                soundGameCompleted.play();
                 Swal.fire({
                     title: '',
                     imageUrl: '/assets/youWin.png',
-                    imageWidth: 400,
+                    imageWidth: 350,
+                    imageHeight: 300,
                     text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
                     confirmButtonText: 'Records',
                     showDenyButton: false,
@@ -239,7 +253,8 @@ function update() {
                 let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
                 let ultimoRegistro = puntajesJugadores[puntajesJugadores.length -1];
                 mostrandoAlerta = true;
-    
+
+                soundGameOver.play();
                 Swal.fire({
                     title: '',
                     text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
@@ -336,6 +351,7 @@ function hitBug(bug, player) {
 }
 
 function collectStar(player, star) {
+    soundStar.play();
     star.disableBody(true, true);
     score += 10;
     scoreText.setText('Score: ' + score);
@@ -373,6 +389,7 @@ function collectStar(player, star) {
         // Añadir colisión entre el jugador y el powerUp
         this.physics.add.overlap(player, powerUp, function () {
             if (!powerUpCollected) { // Verificar si no ha sido recogido
+                soundPowerUp.play();
                 powerUpCollected = true; // Marcar como recogido
                 powerUp.destroy(); // Destruir el powerUp al tocarlo
                 powerUpTimerText.setText(''); // Limpiar el texto

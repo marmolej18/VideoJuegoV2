@@ -1,4 +1,8 @@
  /* Reset CSS: Please avoid making changes here unless you know what you're doing :) */
+ :root {
+    --glassPurple: rgba(255, 255, 255, 0.3);
+    --blanco: rgba(255, 255, 255, 0.8);
+ }
  *,
  *::before,
  *::after {
@@ -8,165 +12,317 @@
  }
 
  @font-face {
-    font-family: 'Minecraft';
-    src: url('Minecraft.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
+     font-family: 'Minecraft';
+     src: url('Minecraft.ttf') format('truetype');
+     font-weight: normal;
+     font-style: normal;
+ }
 
-html, body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: "Minecraft", sans-serif !important;
-    background-color: black; /* Para evitar espacios vacíos */
-    overflow: hidden; /* Evita barras de desplazamiento */
-}
+ html,
+ body {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     height: 100vh;
+     width: 100%;
+     margin: 0;
+     padding: 0;
+     font-family: "Minecraft", sans-serif !important;
+     /*background-color: black;*/
+     /* Para evitar espacios vacíos */
+     overflow: hidden;
+     /* Evita barras de desplazamiento */
+ }
 
-.contenedor-fondo {
+ .contenedor-fondo {
+     width: 800px;
+     height: 700px;
+     background-image: url('../assets/fondo.jpeg');
+     background-size: 100% 100%;
+     /* Ajusta la imagen al tamaño exacto */
+     background-position: center;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     position: relative;
+ }
+
+ .contenedor-start {
+     height: 100%;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: space-between;
+
+     .logo {
+         animation: yoyo 2s infinite ease-in-out;
+     }
+
+     .boton-start {
+         width: 200px;
+         height: 200px;
+         cursor: pointer;
+         margin-top: -50px;
+     }
+ }
+
+ .contenedor-menu {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: space-around;
+     height: 60%;
+
+     .boton-play {
+         width: 150px;
+         height: 90px;
+
+         cursor: pointer;
+     }
+
+     .boton-records {
+         width: 150px;
+         height: 110px;
+
+         cursor: pointer;
+     }
+
+     .boton-help {
+         width: 150px;
+         height: 100px;
+
+         cursor: pointer;
+     }
+
+     .boton-exit {
+         width: 150px;
+         height: 90px;
+
+         cursor: pointer;
+     }
+ }
+
+ .contenedor-nombreJugador {
+     .titulo {
+         margin-top: -60px;
+         font-size: 35px;
+         text-align: center;
+     }
+
+     .formulario {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         gap: 10px;
+         margin-top: 100px;
+
+         input {
+             width: 400px;
+         }
+
+         .mensajeError {
+             color: #dc3545;
+         }
+     }
+ }
+
+ .contenedor-eligePersonaje {
+     .titulo {
+         margin-top: -60px;
+         font-size: 35px;
+         text-align: center;
+     }
+
+     .contenedor {
+         margin-top: 50px;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         gap: 40px;
+     }
+
+     .personajes {
+         display: flex;
+         justify-content: center;
+         gap: 20px
+     }
+
+     .imagenPersonaje {
+         width: 100px;
+         height: 100px;
+     }
+
+     .area-drop {
+         width: 60%;
+         max-width: 400px;
+         height: 200px;
+         border: dotted 4px rebeccapurple;
+         background-color: #ffc0cbbb;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+
+         img {
+             width: 150px;
+             height: 150px;
+         }
+     }
+ }
+
+
+ /* Definición de la animación */
+ @keyframes yoyo {
+
+     0%,
+     100% {
+         transform: translateY(0);
+     }
+
+     50% {
+         transform: translateY(-100px);
+         /* Ajusta la distancia que sube */
+     }
+ }
+
+ /*Efectos de los botones menu*/
+ .boton-play,
+ .boton-records,
+ .boton-help,
+ .boton-exit {
+     width: 150px;
+     transition: transform 0.2s ease-in-out;
+     /* Agrega una transición suave */
+     cursor: pointer;
+ }
+
+ .boton-play:hover,
+ .boton-records:hover,
+ .boton-help:hover,
+ .boton-exit:hover {
+    transform: scale(1.2);/* Aumenta la escala al 120% */
+ }
+
+ /* Pantalla Nombre Jugador agregar botones de guia */
+ .btn-izq {
+    position: absolute;
+    bottom: 50px; /* Ajusta la distancia desde la parte inferior*/
+    left: 10px;  /* Ajusta la distancia desde la izquierda */
+    width: 120px;
+    height: 60px;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+ }
+
+ .btn-izq:hover {
+    transform: scale(1.1); /* Aumenta la escala al 110% */
+ }
+
+ /* Diseño de Menu */
+ .contenedor-fondoOPC {
     width: 800px;
     height: 700px;
-    background-image: url('../assets/fondo.jpeg');
-    background-size: 100% 100%; /* Ajusta la imagen al tamaño exacto */
+    background-image: url('../assets/fondoOpc.jpg');
+    background-size: 100% 100%;
+    /* Ajusta la imagen al tamaño exacto */
     background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+/* Diseño de credits */
+.contenedor-fondoCDT {
+    width: 800px;
+    height: 700px;
+    background-image: url('../assets/fondoOpc.jpg');
+    background-size: 100% 100%;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+/* Contenedor principal */
+.father {
+    width: 80%;
+    max-width: 1000px;
+    text-align: center;
 }
 
- .contenedor-start {
-    height: 100%;
+/* Sección de imágenes */
+.image-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.image-container img {
+    width: 190px; 
+    height: auto;
+    border-radius: 10px;
+}
+
+.content {
+    display: flex;
     justify-content: space-between;
-
-    .logo {
-        animation: yoyo 2s infinite ease-in-out;
-    }
-
-    .boton-start {
-        width: 200px;
-        height: 200px;
-        cursor: pointer;
-        margin-top: -50px;
-    }
- }
-
-.contenedor-menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    height: 60%;
-
-    .boton-play {
-        width: 120px;
-        height: 60px;
- 
-        cursor: pointer;
-    }
-
-    .boton-records {
-        width: 120px;
-        height: 60px;
-
-        cursor: pointer;
-    }
-
-    .boton-help {
-        width: 120px;
-        height: 60px;
-
-        cursor: pointer;
-    }
-
-    .boton-exit {
-        width: 120px;
-        height: 60px;
-
-        cursor: pointer;
-    }
+    align-items: start;
+    text-align: left;
+    margin-top: 20px;
+    font-size: 18px;
 }
 
-.contenedor-nombreJugador {
-    .titulo {
-        margin-top: -60px;
-        font-size: 35px;
-        text-align: center;
-    }
-
-    .formulario {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        margin-top: 100px;
-
-        input {
-            width: 400px;
-        }
-
-        .mensajeError {
-            color: #dc3545;
-        }
-    }
+/* Columna izquierda (Programmers) */
+.left {
+    width: 100%;
+    background: var(--blanco);
+    border-radius: 10px;
 }
 
-.contenedor-eligePersonaje {
-    .titulo {
-        margin-top: -60px;
-        font-size: 35px;
-        text-align: center;
-    }
-
-    .contenedor {
-        margin-top: 50px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 40px;
-    }
-
-    .personajes {
-        display: flex;
-        justify-content: center;
-        gap: 20px
-    }
-
-    .imagenPersonaje {
-        width: 100px;
-        height: 100px;
-    }
-
-    .area-drop {
-        width: 60%;
-        max-width: 400px;
-        height: 200px;
-        border: dotted 4px rebeccapurple;
-        background-color: #ffc0cbbb;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        img {
-            width: 150px;
-            height: 150px;
-        }
-    }
+/* Columna derecha (General Information) */
+.right {
+    width: 100%;
+    background: var(--blanco);
+    border-radius: 10px;
 }
 
-
-/* Definición de la animación */
-@keyframes yoyo {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-100px); /* Ajusta la distancia que sube */
-    }
+/* HELP */
+.glass-background {
+    /*background: rgba(255, 255, 255, 0.3); */
+    background: var(glassPurple);
+    backdrop-filter: blur(10px); /* Desenfoque para el efecto de vidrio */
+    -webkit-backdrop-filter: blur(10px); /* Compatibilidad con Safari */
+    border-radius: 15px; 
+    padding: 20px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
 }
- 
+/* Contenido */
+.content {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas (izquierda y derecha) */
+    grid-template-rows: auto; /* Una sola fila */
+    gap: 20px;
+}
+
+/* Sección izquierda */
+.left-section {
+    background-color: var(--blanco);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Sección derecha */
+.right-section {
+    background-color: var(--blanco);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Sección inferior */
+.down-section {
+    grid-column: 1 / -1; /* Ocupa ambas columnas */
+    background-color: var(--blanco);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}

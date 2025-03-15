@@ -29,7 +29,7 @@ var scoreText;
 var lives = 3;
 var lifeBar;
 var music;
-var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
+var isInvulnerable = false;  
 var isPaused = false;
 var juegoIniciado = false;
 var mostrandoAlerta = false;

@@ -149,9 +149,6 @@ function create() {
     fires.create(670, 410, 'fire').play('fuego').setScale(2, 2);
     fires.create(40, 205, 'fire').play('fuego').setScale(2, 2);
     fires.create(435, 205, 'fire').play('fuego').setScale(2, 2);
-    fires.create(465, 410, 'fire').play('fuego').setScale(2, 2);
-
-
 
     this.physics.add.collider(bug2, platforms);
     this.physics.add.collider(player, movingPlatform);
@@ -229,12 +226,18 @@ function update() {
                 mostrandoAlerta = true;
     
                 Swal.fire({
-                    title: 'GAME OVER',
-                    text: `Nombre: ${ultimoRegistro.nombre}    Puntaje: ${ultimoRegistro.puntaje}`,
-                    icon: 'error',
-                    confirmButtonText: 'Volver a jugar',
-                    cancelButtonText: 'Regresar al menu',
-                    showCancelButton: true 
+                    title: '',
+                    text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
+                    imageUrl: '/assets/gameOver.png',
+                    confirmButtonText: 'Back to play',
+                    cancelButtonText: 'Back to menu',
+                    showCancelButton: true,
+                    background: "#00000080",
+                    width: 800,
+                    heightAuto: false,
+                    customClass: {
+                        popup: 'custom-alert' // Clases CSS personalizadas
+                    },
                 }).then(result => {
                     if (result.isConfirmed) {
                         window.location.href = 'juegoNivel1.html'
@@ -265,7 +268,7 @@ function update() {
     }
 }
 
-function hitFire(fire, player) {
+function hitFire(player, fire) {
     this.physics.pause();
     terminarJuego(player)
 }

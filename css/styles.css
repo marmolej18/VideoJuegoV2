@@ -66,6 +66,15 @@
      }
  }
 
+ .boton-start {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+ }
+
+ .boton-start:hover {
+    transform: scale(1.2);/* Aumenta la escala al 120% */
+ }
+
  .contenedor-menu {
      display: flex;
      flex-direction: column;
@@ -191,7 +200,6 @@
  .boton-exit {
      width: 150px;
      transition: transform 0.2s ease-in-out;
-     /* Agrega una transición suave */
      cursor: pointer;
  }
 

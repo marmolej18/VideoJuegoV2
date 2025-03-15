@@ -30,10 +30,13 @@ var music;
 var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
 var isPaused = false;
 var pauseButton;
-var resumeButton,restartButton, exitButton;
+var resumeButton, restartButton, exitButton;
 var juegoIniciado = false;
 var mostrandoAlerta = false;
 var nivelCompletado = false;
+var powerUp;
+let timeText;
+let invulnerableTime = 0;
 
 var game = new Phaser.Game(config);
 
@@ -47,21 +50,22 @@ function preload() {
     this.load.image('pauseIcon', 'assets/pause_.png');
     this.load.image('playIcon', 'assets/play_.png');
     this.load.image('restart', 'assets/restart.png');
-    this.load.audio('backgroundMusic','music/AKB48.mp3');
+    this.load.image('power', 'assets/linterna.png');
+    this.load.audio('backgroundMusic', 'music/AKB48.mp3');
 
     // Obtener el personaje seleccionado desde localStorage
     let personajeSeleccionado = localStorage.getItem("personajeSeleccionado") || 'personaje1';
-    console.log("Dentro del lvl estamos agarrando: "+personajeSeleccionado);
-    
+    console.log("Dentro del lvl estamos agarrando: " + personajeSeleccionado);
+
     // Cargar las imágenes de los personajes dependiendo del personaje seleccionado
     if (personajeSeleccionado === "personaje1") {
-        this.load.image('playerSprite', 'assets/Frente_.png');  
-        this.load.image('derecha', 'assets/derecha_.png');  
-        this.load.image('izquierda', 'assets/izquierda_.png');  
+        this.load.image('playerSprite', 'assets/Frente_.png');
+        this.load.image('derecha', 'assets/derecha_.png');
+        this.load.image('izquierda', 'assets/izquierda_.png');
     } else if (personajeSeleccionado === "personaje2") {
-        this.load.image('playerSprite', 'assets/frenteF.png');  
-        this.load.image('derecha', 'assets/derechaF.png');  
-        this.load.image('izquierda', 'assets/izquierdaF.png'); 
+        this.load.image('playerSprite', 'assets/frenteF.png');
+        this.load.image('derecha', 'assets/derechaF.png');
+        this.load.image('izquierda', 'assets/izquierdaF.png');
     }
 }
 
@@ -85,6 +89,8 @@ function create() {
         fontFamily: 'Minecraft'
     });
 
+    timeText = this.add.text(20, 120, '', { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft'});
+
     player = this.physics.add.sprite(100, 450, 'playerSprite');
     player.setScale(0.7);
     player.setBounce(0.2);
@@ -99,6 +105,11 @@ function create() {
     stars.create(650, 255, 'star');
     stars.create(750, 610, 'star');
     stars.create(345, 610, 'star');
+
+    /*powerUp = this.physics.add.image(750, 230, 'power');
+    powerUp.setScale(0.2);
+    powerUp.setImmovable(true);//Hacer que no se mueva
+    powerUp.body.allowGravity = false;//Desactivar la gravedad*/
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
@@ -130,28 +141,17 @@ function create() {
     var iconY = 90;  // Posición Y 
     this.add.image(iconX, iconY, 'vidaIcono').setOrigin(0.5, 0.5).setScale(0.5); // Ajusta la escala 
 
-    // Botón de pausa en la esquina superior derecha
-    /*pauseButton = this.add.text(310, 65, 'PAUSE', {
-        fontSize: '30px',
-        fill: '#fff',
-        backgroundColor: '#402806',
-        padding: { x: 10, y: 5 }
-    }).setInteractive();
-
-    // Evento de clic en el botón
-    pauseButton.on('pointerdown', togglePause, this);*/
-
     // Crear el botón de pausa
     pauseButton = this.add.image(370, 85, 'pauseIcon').setScale(0.5).setInteractive();
 
-    
+
     pauseButton.on('pointerdown', togglePause, this);// Evento de clic en el botón
 
-    pauseButton.on('pointerover', function() {
+    pauseButton.on('pointerover', function () {
         pauseButton.setScale(0.55); // Aumentar el tamaño al pasar el mouse
     });
 
-    pauseButton.on('pointerout', function() {
+    pauseButton.on('pointerout', function () {
         pauseButton.setScale(0.5); // Volver al tamaño original
     });
 
@@ -162,7 +162,7 @@ function create() {
 
 function update() {
     if (!juegoIniciado) {
-    /*Notificacion de precaucion */
+        /*Notificacion de precaucion */
         if (!mostrandoAlerta) {
             this.physics.pause();
             mostrandoAlerta = true;
@@ -188,7 +188,7 @@ function update() {
                     title: 'Nivel completado!',
                     icon: 'success',
                     confirmButtonText: 'Nivel 2',
-                    showDenyButton: false  
+                    showDenyButton: false
                 }).then(() => {
                     window.location.href = 'juegoNivel2.html'
                 })
@@ -197,9 +197,9 @@ function update() {
             // perdio 
             if (!mostrandoAlerta) {
                 let puntajesJugadores = JSON.parse(localStorage.getItem("puntajesJugadores")) || [];
-                let ultimoRegistro = puntajesJugadores[puntajesJugadores.length -1];
+                let ultimoRegistro = puntajesJugadores[puntajesJugadores.length - 1];
                 mostrandoAlerta = true;
-    
+
                 Swal.fire({
                     title: 'GAME OVER',
                     text: `Name: ${ultimoRegistro.nombre}    Score: ${ultimoRegistro.puntaje}`,
@@ -244,7 +244,7 @@ function hitBug(bug, player) {
 
     isInvulnerable = true; // Activar invulnerabilidad
     // Temporizador para la invulnerabilidad (por ejemplo, 1 segundo)
-    this.time.delayedCall(1000, function() {
+    this.time.delayedCall(1000, function () {
         isInvulnerable = false;  // Desactivar invulnerabilidad después de 1 segundo
     });
     //console.log("Izquierda:", cursors.left.isDown, "Derecha:", cursors.right.isDown);
@@ -252,7 +252,7 @@ function hitBug(bug, player) {
         this.physics.pause();
         // Verificar si el personaje seleccionado es el personaje 2
         let personajeSeleccionado = localStorage.getItem("personajeSeleccionado") || 'personaje1';
-        
+
         if (personajeSeleccionado === "personaje2") {
             // Si es el personaje 2, aplicar el color azul cielo
             player.setTint(0x87CEEB);  // Azul cielo
@@ -265,7 +265,7 @@ function hitBug(bug, player) {
 
         // Obtener nombres guardados en localStorage
         let nombres = JSON.parse(localStorage.getItem("nombresJugadores")) || [];
-        
+
         // Asegurarse de obtener el último nombre correctamente
         let ultimoNombre = "Desconocido";
         if (Array.isArray(nombres) && nombres.length > 0) {
@@ -288,6 +288,38 @@ function collectStar(player, star) {
     score += 10;
     scoreText.setText('Score: ' + score);
 
+    if (score == 30) {
+        powerUp = this.physics.add.image(500, 230, 'power');
+        powerUp.setScale(0.2);
+        powerUp.setImmovable(true);//Hacer que no se mueva
+        powerUp.body.allowGravity = false;//Desactivar la gravedad
+
+        // Añadir colisión entre el jugador y el powerUp
+        this.physics.add.overlap(player, powerUp, function () {
+            powerUp.destroy(); // Destruir el powerUp al tocarlo
+            isInvulnerable = true; // Activar invulnerabilidad
+            invulnerableTime = 7;
+            timeText.setText('Invulnerable: ' + invulnerableTime);
+            if(isInvulnerable){
+                let timer = this.time.addEvent({
+                    delay: 1000,
+                    repeat: 6,
+                    callback: function () {
+                        invulnerableTime--;
+                        timeText.setText('Invulnerable: ' + invulnerableTime);
+        
+                        if (invulnerableTime === 0) {
+                            isInvulnerable = false;
+                            timeText.setText('');
+                            timer.remove();
+                        }
+                    },
+                    callbackScope: this
+                });
+            }
+        }, null, this);
+    }
+
     if (score == 50) {
         nivelCompletado = true;
         gameOver = true;
@@ -295,7 +327,7 @@ function collectStar(player, star) {
         music.stop();
         // Obtener nombres guardados en localStorage
         let nombres = JSON.parse(localStorage.getItem("nombresJugadores")) || [];
-        
+
         // Asegurarse de obtener el último nombre correctamente
         let ultimoNombre = "Desconocido";
         if (Array.isArray(nombres) && nombres.length > 0) {

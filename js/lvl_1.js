@@ -27,7 +27,7 @@ var scoreText;
 var lives = 3;
 var lifeBar;
 var music;
-var isInvulnerable = false;  // Variable para controlar la invulnerabilidad
+var isInvulnerable = false;  
 var isPaused = false;
 var pauseButton;
 var resumeButton, restartButton, exitButton;
@@ -37,6 +37,8 @@ var nivelCompletado = false;
 var powerUp;
 let timeText;
 let invulnerableTime = 0;
+let powerUpTimer; // Variable para almacenar el temporizador del powerUp
+let timer;
 
 var game = new Phaser.Game(config);
 
@@ -308,7 +310,7 @@ function collectStar(player, star) {
         let powerUpCollected = false;
 
         // Temporizador para destruir el powerUp después de 7 segundos
-        let powerUpTimer = this.time.addEvent({
+        powerUpTimer = this.time.addEvent({
             delay: 1000, // Cada segundo
             repeat: 6, // Repetir 6 veces (0 a 6, total 7 segundos)
             callback: function () {
@@ -334,7 +336,7 @@ function collectStar(player, star) {
                 invulnerableTime = 7;
                 timeText.setText('Invulnerable: ' + invulnerableTime);
                 
-                let timer = this.time.addEvent({
+                timer = this.time.addEvent({
                     delay: 1000,
                     repeat: 6,
                     callback: function () {
@@ -403,10 +405,22 @@ function togglePause() {
         this.physics.pause(); // Pausar el juego
         music.pause(); // Pausar la música
         pauseButton.setTexture('playIcon'); // Cambiar a icono de "play"
+        if(powerUpTimer){
+            powerUpTimer.paused = true;
+        }
+        if(timer){
+            timer.paused = true;
+        }
     } else {
         this.physics.resume(); // Reanudar el juego
         music.resume(); // Reanudar la música
         pauseButton.setTexture('pauseIcon'); // Cambiar a icono de "pause"
+        if(powerUpTimer){
+            powerUpTimer.paused = false;
+        }
+        if(timer){
+            timer.paused = false;
+        }
     }
     isPaused = !isPaused;
 }

@@ -339,4 +339,8 @@
     height: 700px !important;
     color: #FFF;
     font-size: 20px;
+
+    .swal2-actions {
+        margin-top: -180px;
+    }
 }

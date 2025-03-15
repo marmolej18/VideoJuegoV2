@@ -288,26 +288,53 @@ function collectStar(player, star) {
     score += 10;
     scoreText.setText('Score: ' + score);
 
-    if (score == 30) {
+    if (score == 10) {
         powerUp = this.physics.add.image(500, 230, 'power');
         powerUp.setScale(0.2);
-        powerUp.setImmovable(true);//Hacer que no se mueva
-        powerUp.body.allowGravity = false;//Desactivar la gravedad
+        powerUp.setImmovable(true); // Hacer que no se mueva
+        powerUp.body.allowGravity = false; // Desactivar la gravedad
+
+        // Crear un texto para mostrar el tiempo restante
+        let remainingPowerUpTime = 7; // Tiempo total para recoger el powerUp
+        let powerUpTimerText = this.add.text(20, 120, 'Available power: ' + remainingPowerUpTime, { fontSize: '25px', fill: 'black', fontFamily: 'Minecraft' });
+
+        // Variable para verificar si el powerUp ha sido recogido
+        let powerUpCollected = false;
+
+        // Temporizador para destruir el powerUp después de 7 segundos
+        let powerUpTimer = this.time.addEvent({
+            delay: 1000, // Cada segundo
+            repeat: 6, // Repetir 6 veces (0 a 6, total 7 segundos)
+            callback: function () {
+                remainingPowerUpTime--;
+                powerUpTimerText.setText('Available power: ' + remainingPowerUpTime); // Actualizar el texto
+
+                if (remainingPowerUpTime <= 0) {
+                    powerUp.destroy(); // Destruir el powerUp si no ha sido recogido
+                    powerUpTimerText.setText(''); // Limpiar el texto
+                    powerUpTimer.remove(); // Detener el temporizador
+                }
+            },
+            callbackScope: this
+        });
 
         // Añadir colisión entre el jugador y el powerUp
         this.physics.add.overlap(player, powerUp, function () {
-            powerUp.destroy(); // Destruir el powerUp al tocarlo
-            isInvulnerable = true; // Activar invulnerabilidad
-            invulnerableTime = 7;
-            timeText.setText('Invulnerable: ' + invulnerableTime);
-            if(isInvulnerable){
+            if (!powerUpCollected) { // Verificar si no ha sido recogido
+                powerUpCollected = true; // Marcar como recogido
+                powerUp.destroy(); // Destruir el powerUp al tocarlo
+                powerUpTimerText.setText(''); // Limpiar el texto
+                isInvulnerable = true; // Activar invulnerabilidad
+                invulnerableTime = 7;
+                timeText.setText('Invulnerable: ' + invulnerableTime);
+                
                 let timer = this.time.addEvent({
                     delay: 1000,
                     repeat: 6,
                     callback: function () {
                         invulnerableTime--;
                         timeText.setText('Invulnerable: ' + invulnerableTime);
-        
+
                         if (invulnerableTime === 0) {
                             isInvulnerable = false;
                             timeText.setText('');
@@ -316,6 +343,8 @@ function collectStar(player, star) {
                     },
                     callbackScope: this
                 });
+
+                powerUpTimer.remove(); // Detener el temporizador del powerUp
             }
         }, null, this);
     }
